@@ -1,0 +1,3838 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eko Editor - Enhanced UI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #ffffff;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        .editor-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            min-height: 100vh;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            border-radius: 24px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        /* Header */
+        .header {
+            padding: 32px 40px;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header .status {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 20px;
+            background: rgba(52, 199, 89, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(52, 199, 89, 0.3);
+            border-radius: 25px;
+            font-size: 13px;
+            color: #34c759;
+            font-weight: 500;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #34c759;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        /* Product Info */
+        .product-info {
+            padding: 40px 40px 32px;
+            background: rgba(255,255,255,0.5);
+        }
+
+        .product-info h2 {
+            font-size: 36px;
+            font-weight: 800;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, #1a1a1a, #4a4a4a);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .product-info .subtitle {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 24px;
+            font-weight: 500;
+        }
+
+        /* Main Content Area */
+        .main-content {
+            padding: 0 40px 140px;
+            min-height: 500px;
+            position: relative;
+        }
+        /* Mode Selection (Step 0) */
+               .mode-selection {
+                   display: block;
+                   padding: 60px 0;
+               }
+
+               .mode-selection.hidden {
+                   display: none;
+               }
+
+               .mode-selection-header {
+                   text-align: center;
+                   margin-bottom: 48px;
+               }
+
+               .mode-selection-header h2 {
+                   font-size: 36px;
+                   font-weight: 800;
+                   color: #1a1a1a;
+                   margin-bottom: 12px;
+               }
+
+               .mode-selection-header p {
+                   font-size: 18px;
+                   color: #666;
+               }
+
+               .mode-cards {
+                   display: grid;
+                   grid-template-columns: 1fr 1fr;
+                   gap: 32px;
+                   max-width: 1200px;
+                   margin: 0 auto;
+               }
+
+               .mode-card {
+                   background: rgba(255, 255, 255, 0.95);
+                   border: 3px solid rgba(255, 255, 255, 0.3);
+                   border-radius: 24px;
+                   padding: 40px;
+                   cursor: pointer;
+                   transition: all 0.4s ease;
+               }
+
+               .mode-card:hover {
+                   transform: translateY(-8px);
+                   box-shadow: 0 20px 40px rgba(102, 126, 234, 0.2);
+                   border-color: rgba(102, 126, 234, 0.5);
+               }
+
+               .mode-icon {
+                   width: 80px;
+                   height: 80px;
+                   border-radius: 20px;
+                   display: flex;
+                   align-items: center;
+                   justify-content: center;
+                   font-size: 36px;
+                   margin-bottom: 24px;
+               }
+
+               .mode-card.quick .mode-icon {
+                   background: linear-gradient(135deg, #ffd93d, #f6c23e);
+               }
+
+               .mode-card.manual .mode-icon {
+                   background: linear-gradient(135deg, #667eea, #764ba2);
+                   color: white;
+               }
+
+               .mode-title {
+                   font-size: 28px;
+                   font-weight: 700;
+                   color: #1a1a1a;
+                   margin-bottom: 8px;
+               }
+
+               .mode-time {
+                   font-size: 16px;
+                   color: #667eea;
+                   font-weight: 600;
+                   margin-bottom: 16px;
+               }
+
+               .mode-description {
+                   font-size: 16px;
+                   color: #666;
+                   margin-bottom: 24px;
+               }
+
+               .mode-features {
+                   display: flex;
+                   flex-direction: column;
+                   gap: 12px;
+                   margin-bottom: 24px;
+               }
+
+               .mode-feature {
+                   font-size: 14px;
+                   color: #333;
+               }
+
+               .mode-select-btn {
+                   width: 100%;
+                   padding: 16px;
+                   background: linear-gradient(135deg, #667eea, #764ba2);
+                   color: white;
+                   border: none;
+                   border-radius: 12px;
+                   font-size: 16px;
+                   font-weight: 700;
+                   cursor: pointer;
+                   transition: all 0.3s ease;
+               }
+
+               .mode-select-btn:hover {
+                   transform: translateY(-2px);
+                   box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
+               }
+        /* Frame Selection Screen */
+        .frame-selection {
+            display: none;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .frame-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .frame-item {
+            position: relative;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .frame-item:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(102, 126, 234, 0.3);
+            border-color: rgba(102, 126, 234, 0.5);
+        }
+
+        .frame-item.selected {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+            box-shadow: 0 16px 32px rgba(102, 126, 234, 0.4);
+        }
+
+        .frame-item h3 {
+            position: absolute;
+            top: 24px;
+            left: 24px;
+            font-size: 20px;
+            font-weight: 600;
+            color: #1a1a1a;
+            z-index: 10;
+        }
+
+        .frame-preview {
+            width: 100%;
+            height: 400px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .frame-preview.loading::after {
+            content: '';
+            position: absolute;
+            top: -100%;
+            left: -100%;
+            right: -100%;
+            bottom: -100%;
+            background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.5) 50%, transparent 70%);
+            animation: shimmer 1.5s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+
+        .select-text {
+            font-size: 18px;
+            font-weight: 600;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            opacity: 0.9;
+        }
+
+        /* Lifestyle Generation Screen */
+        .lifestyle-generation {
+            display: none;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .scene-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .scene-item {
+            background: #f5f5f7;
+            border-radius: 16px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 3px solid transparent;
+            position: relative;
+        }
+
+        .scene-item:hover {
+            transform: scale(1.02);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.1);
+        }
+
+        .scene-item.selected {
+            border-color: #007aff;
+        }
+
+        .scene-preview {
+            width: 100%;
+            height: 300px;
+            background: #6b7c93;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .scene-label {
+            position: absolute;
+            bottom: 16px;
+            left: 16px;
+            right: 16px;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(10px);
+            padding: 12px 16px;
+            border-radius: 12px;
+            color: white;
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        /* Variant Viewer */
+        .variant-viewer {
+            display: none;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .variant-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 32px;
+            align-items: start;
+        }
+
+        .main-preview {
+            background: #6b7c93;
+            border-radius: 16px;
+            height: 500px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .star {
+            width: 200px;
+            height: 200px;
+            position: relative;
+        }
+
+        .color-controls {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 32px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .color-controls h3 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .instructions {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 24px;
+            line-height: 1.5;
+        }
+
+        .variant-previews {
+            display: grid;
+            gap: 16px;
+        }
+
+        .variant-preview {
+            background: #6b7c93;
+            border-radius: 12px;
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+            border: 3px solid transparent;
+        }
+
+        .variant-preview:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+        }
+
+        /* Editor Sections */
+        .editor-section {
+            margin-bottom: 32px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid #e5e5e7;
+        }
+
+        .editor-section:last-of-type {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .editor-section h4 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #1a1a1a;
+        }
+
+        /* Object Grid */
+        .object-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .object-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 16px 12px;
+            background: white;
+            border: 2px solid #e5e5e7;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+
+        .object-item:hover {
+            border-color: #007aff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,122,255,0.15);
+        }
+
+        .object-item.selected {
+            border-color: #007aff;
+            background: #f0f8ff;
+        }
+
+        .object-icon {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        /* MASKING WORKFLOW - Video Color Variants */
+        .masking-workflow-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 32px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .workflow-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .workflow-header h3 {
+            font-size: 28px;
+            font-weight: 800;
+            color: #1a1a1a;
+            margin-bottom: 12px;
+        }
+
+        .workflow-header p {
+            font-size: 16px;
+            color: #666;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .masking-steps {
+            display: grid;
+            gap: 40px;
+        }
+
+        .masking-step {
+            background: rgba(255, 255, 255, 0.8);
+            border: 2px solid rgba(102, 126, 234, 0.2);
+            border-radius: 16px;
+            padding: 32px;
+            transition: all 0.3s ease;
+        }
+
+        .masking-step.disabled {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .step-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .step-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+
+        .step-description {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 24px;
+            line-height: 1.6;
+        }
+
+        /* Step 1: Frame Selection */
+        .frame-selection-area {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+        }
+
+        .video-preview-area h4,
+        .frame-controls h4 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 16px;
+        }
+
+        .first-frame-preview {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 12px;
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .first-frame-preview:hover {
+            border-color: #667eea;
+            transform: scale(1.02);
+        }
+
+        .first-frame-preview.selected {
+            border-color: #34c759;
+            box-shadow: 0 0 0 3px rgba(52, 199, 89, 0.2);
+        }
+
+        .frame-star {
+            width: 120px;
+            height: 120px;
+        }
+
+        .frame-navigation {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .frame-nav-btn {
+            width: 40px;
+            height: 40px;
+            background: rgba(102, 126, 234, 0.1);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 16px;
+            color: #667eea;
+        }
+
+        .frame-nav-btn:hover {
+            background: rgba(102, 126, 234, 0.2);
+        }
+
+        .frame-nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .frame-counter {
+            font-size: 14px;
+            color: #666;
+            font-weight: 500;
+            min-width: 100px;
+            text-align: center;
+        }
+
+        .frame-info {
+            background: rgba(52, 199, 89, 0.1);
+            border: 1px solid rgba(52, 199, 89, 0.3);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .frame-info.active {
+            display: block;
+        }
+
+        .frame-info-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #34c759;
+            margin-bottom: 8px;
+        }
+
+        .frame-info-details {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        .select-frame-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #34c759, #30d158);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .select-frame-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(52, 199, 89, 0.3);
+        }
+
+        /* Step 2: Object Masking */
+        .masking-area {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+        }
+
+        .mask-preview-area h4,
+        .mask-tools-area h4 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 16px;
+        }
+
+        .maskable-frame {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 12px;
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            cursor: crosshair;
+            overflow: hidden;
+            border: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .maskable-frame:hover {
+            border-color: #007aff;
+        }
+
+        .maskable-star {
+            width: 120px;
+            height: 120px;
+        }
+
+        .mask-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 122, 255, 0.2);
+            border: 3px dashed #007aff;
+            border-radius: 12px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        .mask-overlay.active {
+            opacity: 1;
+        }
+
+        .mask-instruction {
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+            margin-top: 12px;
+            font-style: italic;
+        }
+
+        .masking-tools {
+            display: grid;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .mask-tool {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.8);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            font-weight: 500;
+            color: #666;
+        }
+
+        .mask-tool:hover {
+            border-color: rgba(102, 126, 234, 0.5);
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .mask-tool.active {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.2);
+            color: #667eea;
+        }
+
+        .tool-icon {
+            font-size: 18px;
+        }
+
+        .mask-settings {
+            margin-bottom: 24px;
+        }
+
+        .mask-setting {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .mask-setting label {
+            font-size: 13px;
+            color: #666;
+            min-width: 100px;
+            font-weight: 500;
+        }
+
+        .mask-setting input[type="range"] {
+            flex: 1;
+            height: 6px;
+        }
+
+        .mask-setting span {
+            font-size: 12px;
+            color: #999;
+            min-width: 40px;
+            text-align: right;
+        }
+
+        .mask-actions {
+            display: grid;
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+
+        .mask-action-btn {
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .mask-action-btn.primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+        }
+
+        .mask-action-btn.secondary {
+            background: rgba(255, 255, 255, 0.8);
+            color: #666;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .mask-action-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .mask-status {
+            background: rgba(52, 199, 89, 0.1);
+            border: 2px solid rgba(52, 199, 89, 0.3);
+            border-radius: 12px;
+            padding: 16px;
+            display: none;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .mask-status.active {
+            display: flex;
+        }
+
+        .status-icon {
+            font-size: 20px;
+        }
+
+        .status-text {
+            font-size: 14px;
+            color: #34c759;
+            font-weight: 500;
+        }
+
+        /* Step 3: Color Generation */
+        .color-generation-area {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 32px;
+        }
+
+        .tracking-preview-area h4,
+        .color-variant-controls h4 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 16px;
+        }
+
+        .tracking-preview {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 12px;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+        }
+
+        .tracking-info {
+            background: rgba(52, 199, 89, 0.1);
+            border: 1px solid rgba(52, 199, 89, 0.3);
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+        }
+
+        .tracking-info-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #34c759;
+            margin-bottom: 4px;
+        }
+
+        .tracking-info-text {
+            font-size: 11px;
+            color: #666;
+        }
+
+        .color-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .color-option {
+            background: rgba(255, 255, 255, 0.8);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .color-option:hover {
+            border-color: rgba(102, 126, 234, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .color-option.selected {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .color-circle {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            margin: 0 auto 8px;
+            border: 2px solid rgba(0,0,0,0.1);
+        }
+
+        .color-option span {
+            font-size: 12px;
+            font-weight: 500;
+            color: #1a1a1a;
+        }
+
+        .color-checkbox {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+            background: #e5e5e7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: transparent;
+            transition: all 0.3s ease;
+        }
+
+        .color-option.selected .color-checkbox {
+            background: #667eea;
+            color: white;
+        }
+
+        .generation-settings {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .setting-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .setting-group label {
+            font-size: 13px;
+            font-weight: 500;
+            color: #666;
+        }
+
+        .setting-group select {
+            padding: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.9);
+            font-size: 13px;
+            color: #666;
+        }
+
+        .generate-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
+        }
+
+        .generate-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Generated Results */
+        .generated-results {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 32px;
+            margin-top: 32px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+
+        .generated-results.active {
+            display: block;
+        }
+
+        .generated-results h3 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            color: #1a1a1a;
+            text-align: center;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .result-item {
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .result-item:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+        }
+
+        .result-video {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .play-button-small {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #667eea;
+            font-size: 16px;
+        }
+
+        .result-label {
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #1a1a1a;
+        }
+
+        .color-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        /* Step Navigation Buttons */
+        .step-nav-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 32px;
+            justify-content: flex-end;
+        }
+
+        .step-nav-btn {
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .step-nav-btn.secondary {
+            background: rgba(255, 255, 255, 0.9);
+            color: #666;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .step-nav-btn.secondary:hover {
+            background: #e5e5e7;
+            transform: translateY(-1px);
+        }
+
+        .step-nav-btn.primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+        }
+
+        .step-nav-btn.primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
+        }
+
+        .step-nav-btn.primary:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            opacity: 0.5;
+            box-shadow: none;
+        }
+
+        /* AI Prompt Section */
+        .ai-prompt-section {
+            margin-top: 24px;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+        }
+
+        .ai-prompt-section h4 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #1a1a1a;
+        }
+
+        .prompt-input-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .prompt-input-container textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #e5e5e7;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 80px;
+            background: white;
+        }
+
+        .prompt-input-container textarea:focus {
+            outline: none;
+            border-color: #007aff;
+            box-shadow: 0 0 0 3px rgba(0,122,255,0.1);
+        }
+
+        .prompt-input-container textarea::placeholder {
+            color: #999;
+        }
+
+        .apply-prompt-btn {
+            align-self: flex-start;
+            padding: 10px 20px;
+            background: #007aff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        /* Library Styles */
+        .library-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 32px;
+            padding: 0 8px;
+        }
+
+        .library-title h3 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: #1a1a1a;
+        }
+
+        .library-title p {
+            color: #666;
+            font-size: 16px;
+            margin: 0;
+        }
+
+        .library-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .action-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            background: #007aff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .action-btn:hover {
+            background: #0051d5;
+            transform: translateY(-1px);
+        }
+
+        .action-btn .icon {
+            font-size: 16px;
+        }
+
+        .selection-tools {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 16px;
+            background: #f5f5f7;
+            border-radius: 8px;
+            border: 1px solid #e5e5e7;
+        }
+
+        .selected-count {
+            font-size: 14px;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .tool-btn {
+            padding: 6px 12px;
+            background: white;
+            border: 1px solid #e5e5e7;
+            border-radius: 6px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .tool-btn:hover {
+            border-color: #007aff;
+            color: #007aff;
+        }
+
+        /* Breadcrumb */
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            margin-bottom: 24px;
+            padding: 0 8px;
+        }
+
+        .breadcrumb-item {
+            font-size: 14px;
+            color: #666;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+
+        .breadcrumb-item:hover {
+            color: #007aff;
+        }
+
+        .breadcrumb-item.active {
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+
+        .breadcrumb-separator {
+            margin: 0 12px;
+            color: #ccc;
+        }
+
+        /* Asset Grid */
+        .asset-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .asset-item {
+            background: white;
+            border: 2px solid #f5f5f7;
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .asset-item:hover {
+            border-color: #007aff;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0,122,255,0.15);
+        }
+
+        .asset-item.selected {
+            border-color: #007aff;
+            background: #f0f8ff;
+        }
+
+        .asset-preview {
+            width: 100%;
+            height: 160px;
+            background: #f5f5f7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .folder-icon {
+            font-size: 48px;
+            opacity: 0.7;
+        }
+
+        .video-thumbnail {
+            width: 100%;
+            height: 100%;
+            background: #6b7c93;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .play-overlay {
+            width: 48px;
+            height: 48px;
+            background: rgba(0,0,0,0.8);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+        }
+
+        .image-thumbnail {
+            width: 100%;
+            height: 100%;
+            background: #e5e5e7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .image-placeholder {
+            font-size: 48px;
+            opacity: 0.5;
+        }
+
+        .model-thumbnail {
+            width: 100%;
+            height: 100%;
+            background: #d1d1d6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .model-placeholder {
+            font-size: 48px;
+            opacity: 0.7;
+        }
+
+        .asset-info {
+            padding: 16px;
+            padding-right: 50px;
+        }
+
+        .asset-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: #1a1a1a;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .asset-meta {
+            font-size: 12px;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        .asset-checkbox {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: white;
+            border-radius: 4px;
+            padding: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        /* Export Settings Styles */
+        .export-content {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 40px;
+            margin-bottom: 32px;
+        }
+
+        .export-preview h3,
+        .export-controls h3 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            color: #1a1a1a;
+        }
+
+        .preview-container {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 300px;
+        }
+
+        .aspect-frame {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 320px;
+            height: 320px;
+        }
+
+        .aspect-frame.ratio-16-9 {
+            width: 320px;
+            height: 180px;
+        }
+
+        .aspect-frame.ratio-9-16 {
+            width: 180px;
+            height: 320px;
+        }
+
+        .aspect-frame.ratio-1-1 {
+            width: 250px;
+            height: 250px;
+        }
+
+        .preview-video {
+            width: 80%;
+            height: 80%;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .play-button-preview {
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: #667eea;
+        }
+
+        .preview-info {
+            margin-top: 16px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .preview-info span:first-child {
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .preview-info span:last-child {
+            color: #666;
+            font-size: 14px;
+        }
+
+        /* Export Sections */
+        .export-section {
+            margin-bottom: 32px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .export-section:last-of-type {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .export-section h4 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #1a1a1a;
+        }
+
+        /* Platform Grid */
+        .platform-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 12px;
+        }
+
+        .platform-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 16px;
+            padding: 16px 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .platform-card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(102, 126, 234, 0.5);
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.2);
+        }
+
+        .platform-card.active {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+        }
+
+        .platform-checkbox {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.8);
+            border: 2px solid #e5e5e7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: transparent;
+            transition: all 0.3s ease;
+        }
+
+        .platform-card.active .platform-checkbox {
+            background: #667eea;
+            border-color: #667eea;
+            color: white;
+        }
+
+        .platform-icon {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .platform-name {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: #1a1a1a;
+        }
+
+        .platform-ratio {
+            font-size: 11px;
+            color: #666;
+        }
+
+        .platform-selection-summary {
+            margin-top: 20px;
+            padding: 16px;
+            background: rgba(102, 126, 234, 0.1);
+            border: 2px solid rgba(102, 126, 234, 0.3);
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .platform-selection-summary span {
+            font-size: 14px;
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        /* Custom Dimensions */
+        .dimension-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            align-items: end;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .input-group label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #666;
+        }
+
+        .input-group input {
+            padding: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.9);
+            font-size: 14px;
+        }
+
+        .input-group span {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+            font-size: 12px;
+        }
+
+        .aspect-lock {
+            grid-column: 1 / -1;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .aspect-lock input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+        }
+
+        .aspect-lock label {
+            font-size: 14px;
+            color: #666;
+        }
+
+        /* Quality Grid */
+        .quality-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        /* Bulk Options */
+        .bulk-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .bulk-option {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .bulk-option input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+        }
+
+        .bulk-option label {
+            font-size: 14px;
+            color: #1a1a1a;
+        }
+
+        .platform-multi-select {
+            margin-top: 16px;
+            padding: 16px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .platform-multi-select label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #666;
+            display: block;
+            margin-bottom: 12px;
+        }
+
+        .platform-checkboxes {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 8px;
+        }
+
+        .platform-check {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .platform-check input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+        }
+
+        .platform-check label {
+            font-size: 13px;
+            color: #1a1a1a;
+        }
+
+        /* Export Summary */
+        .export-summary {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 20px;
+            margin: 24px 0;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .summary-item:last-child {
+            border-bottom: none;
+        }
+
+        .summary-label {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .summary-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        /* Export Button */
+        .export-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135px, #34c759, #30d158);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            box-shadow: 0 6px 24px rgba(52, 199, 89, 0.3);
+        }
+
+        .export-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 32px rgba(52, 199, 89, 0.4);
+        }
+
+        .variant-preview.selected {
+            border-color: #007aff;
+            box-shadow: 0 8px 24px rgba(0,122,255,0.3);
+        }
+
+        .variant-preview .color-square {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .approve-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #34c759, #30d158);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 24px;
+            box-shadow: 0 4px 16px rgba(52, 199, 89, 0.3);
+        }
+
+        .approve-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(52, 199, 89, 0.4);
+        }
+
+        /* Video Generation */
+        .video-generation {
+            display: none;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .video-preview {
+            background: #6b7c93;
+            border-radius: 16px;
+            height: 500px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            margin-bottom: 24px;
+        }
+
+        .play-button {
+            width: 80px;
+            height: 80px;
+            background: rgba(0,0,0,0.8);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .play-button:hover {
+            transform: scale(1.1);
+            background: rgba(0,0,0,0.9);
+        }
+
+        .play-icon {
+            width: 0;
+            height: 0;
+            border-left: 24px solid white;
+            border-top: 16px solid transparent;
+            border-bottom: 16px solid transparent;
+            margin-left: 8px;
+        }
+
+        .video-controls {
+            background: #f5f5f7;
+            border-radius: 16px;
+            padding: 24px;
+            display: grid;
+            gap: 16px;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .control-group label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #666;
+        }
+
+        .control-group select {
+            padding: 12px;
+            border: 1px solid #e5e5e7;
+            border-radius: 8px;
+            font-size: 14px;
+            background: white;
+            cursor: pointer;
+        }
+
+        /* Timeline */
+        .timeline-container {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 24px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .timeline-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #666;
+            margin-right: 24px;
+        }
+
+        .timeline-steps {
+            display: flex;
+            gap: 24px;
+            flex: 1;
+            align-items: center;
+        }
+
+        .timeline-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            padding: 8px;
+        }
+
+        .timeline-step::after {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: calc(100% + 8px);
+            width: calc(24px - 16px);
+            height: 2px;
+            background: #e5e5e7;
+        }
+
+        .timeline-step:last-child::after {
+            display: none;
+        }
+
+        .timeline-number {
+            width: 32px;
+            height: 32px;
+            background: #e5e5e7;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 600;
+            color: #666;
+            margin-bottom: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .timeline-text {
+            font-size: 12px;
+            color: #666;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .timeline-step.active .timeline-number {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            transform: scale(1.2);
+            box-shadow: 0 4px 16px rgba(102, 126, 234, 0.4);
+        }
+
+        .timeline-step.active .timeline-text {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
+        }
+
+        .timeline-step.completed .timeline-number {
+            background: linear-gradient(135deg, #34c759, #30d158);
+            color: white;
+            box-shadow: 0 4px 16px rgba(52, 199, 89, 0.3);
+        }
+
+        .timeline-step.completed::after {
+            background: #34c759;
+        }
+
+        /* Navigation Buttons */
+        .nav-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 32px;
+            justify-content: flex-end;
+        }
+
+        .nav-btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+        }
+
+        .nav-btn.secondary {
+            background: #f5f5f7;
+            color: #666;
+        }
+
+        .nav-btn.secondary:hover {
+            background: #e5e5e7;
+        }
+
+        .nav-btn.primary {
+            background: #007aff;
+            color: white;
+        }
+
+        .nav-btn.primary:hover {
+            background: #0051d5;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0,122,255,0.3);
+        }
+
+        /* Animations */
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Loading States */
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255,255,255,0.95);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .loading-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .loader {
+            width: 48px;
+            height: 48px;
+            border: 4px solid #f5f5f7;
+            border-top-color: #007aff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 16px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .loading-progress {
+            width: 200px;
+            height: 4px;
+            background: #f5f5f7;
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 12px;
+        }
+
+        .loading-progress-bar {
+            height: 100%;
+            background: #007aff;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .header {
+                padding: 16px 20px;
+            }
+
+            .product-info {
+                padding: 24px 20px 16px;
+            }
+
+            .product-info h2 {
+                font-size: 24px;
+            }
+
+            .main-content {
+                padding: 0 20px 120px;
+            }
+
+            .frame-grid, .scene-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .variant-content {
+                grid-template-columns: 1fr;
+            }
+
+            .timeline-container {
+                padding: 16px 20px;
+            }
+
+            .timeline-steps {
+                gap: 12px;
+            }
+
+            .timeline-text {
+                font-size: 10px;
+            }
+            .mode-cards {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="editor-container">
+        <!-- Header -->
+        <div class="header">
+            <h1>Eko Editor</h1>
+            <div class="status">
+                <div class="status-dot"></div>
+                <span>AI Ready</span>
+            </div>
+        </div>
+
+        <!-- Product Info -->
+        <div class="product-info">
+            <h2>"product name"</h2>
+            <div class="subtitle" id="subtitle">Choose Your Workflow</div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Loading Overlay -->
+            <div class="loading-overlay" id="loadingOverlay">
+                <div class="loader"></div>
+                <div class="loading-text" id="loadingText">Processing...</div>
+                <div class="loading-progress">
+                    <div class="loading-progress-bar" id="progressBar"></div>
+                </div>
+            </div>
+            <!-- Step 0: Mode Selection -->
+                        <div class="mode-selection" id="modeSelection">
+                            <div class="mode-selection-header">
+                                <h2>Choose Your Workflow</h2>
+                                <p>Select how you'd like to create your product videos</p>
+                            </div>
+                            <div class="mode-cards">
+                                <div class="mode-card quick" onclick="selectMode('quick')">
+                                    <div class="mode-icon">⚡</div>
+                                    <div class="mode-title">Quick Generate</div>
+                                    <div class="mode-time">2-3 minutes</div>
+                                    <div class="mode-description">Let AI handle everything automatically</div>
+                                    <div class="mode-features">
+                                        <div class="mode-feature">✓ Upload reference image</div>
+                                        <div class="mode-feature">✓ Enter text prompt</div>
+                                        <div class="mode-feature">✓ AI generates video</div>
+                                        <div class="mode-feature">✓ Ready to export</div>
+                                    </div>
+                                    <button class="mode-select-btn">Start Quick Generate →</button>
+                                </div>
+                                <div class="mode-card manual" onclick="selectMode('manual')">
+                                    <div class="mode-icon">🎨</div>
+                                    <div class="mode-title">Full Control</div>
+                                    <div class="mode-time">10-15 minutes</div>
+                                    <div class="mode-description">Customize every aspect of your video</div>
+                                    <div class="mode-features">
+                                        <div class="mode-feature">✓ Scene editing & customization</div>
+                                        <div class="mode-feature">✓ Object masking & tracking</div>
+                                        <div class="mode-feature">✓ Multiple color variants</div>
+                                        <div class="mode-feature">✓ Advanced export options</div>
+                                    </div>
+                                    <button class="mode-select-btn">Start Full Workflow →</button>
+                                </div>
+                            </div>
+                        </div>
+            <!-- Frame Selection -->
+            <div class="frame-selection" id="frameSelection">                <div class="frame-grid">
+                    <div class="frame-item" onclick="selectFrame(this, 1)">
+                        <h3>Frame 1</h3>
+                        <div class="frame-preview">
+                            <span class="select-text">SELECT</span>
+                        </div>
+                    </div>
+                    <div class="frame-item" onclick="selectFrame(this, 2)">
+                        <h3>Frame 2</h3>
+                        <div class="frame-preview">
+                            <span class="select-text">SELECT</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="nav-buttons">
+                    <button class="nav-btn secondary" onclick="previousStep()">← Back to Mode Selection</button>
+                    <button class="nav-btn primary" onclick="nextStep()">Continue to Lifestyle →</button>
+                </div>
+            </div>
+
+            <!-- Lifestyle Generation -->
+            <div class="lifestyle-generation" id="lifestyleGeneration">
+                <div class="scene-grid">
+                    <div class="scene-item" onclick="selectScene(this, 1)">
+                        <div class="scene-preview">
+                            <span class="select-text">SELECT</span>
+                        </div>
+                        <div class="scene-label">Modern Living Room</div>
+                    </div>
+                    <div class="scene-item" onclick="selectScene(this, 2)">
+                        <div class="scene-preview"></div>
+                        <div class="scene-label">Minimalist Studio</div>
+                    </div>
+                    <div class="scene-item" onclick="selectScene(this, 3)">
+                        <div class="scene-preview"></div>
+                        <div class="scene-label">Outdoor Terrace</div>
+                    </div>
+                    <div class="scene-item" onclick="selectScene(this, 4)">
+                        <div class="scene-preview"></div>
+                        <div class="scene-label">Cozy Kitchen</div>
+                    </div>
+                </div>
+                <div class="nav-buttons">
+                    <button class="nav-btn secondary" onclick="previousStep()">← Back to Frame</button>
+                    <button class="nav-btn primary" onclick="nextStep()">Continue to Scene Editor →</button>
+                </div>
+            </div>
+
+            <!-- Editor -->
+            <div class="variant-viewer" id="variantViewer">
+                <div class="variant-content">
+                    <div>
+                        <div class="main-preview">
+                            <svg class="star" viewBox="0 0 200 200" id="mainStar">
+                                <path d="M100,10 L120,70 L180,70 L130,110 L150,170 L100,130 L50,170 L70,110 L20,70 L80,70 Z" 
+                                      fill="#ff0080" stroke="#000" stroke-width="2" id="starPath"/>
+                            </svg>
+                        </div>
+                        
+                        <!-- AI Prompt Section -->
+                        <div class="ai-prompt-section">
+                            <h4>Refine Scene</h4>
+                            <div class="prompt-input-container">
+                                <textarea 
+                                    placeholder="Describe changes you'd like to make to the scene... (e.g., 'make the lighting warmer', 'add more shadows', 'change the background color')"
+                                    id="scenePrompt"
+                                    rows="3"></textarea>
+                                <button class="apply-prompt-btn" onclick="applyPrompt()">Apply Changes</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="color-controls">
+                        <h3>Scene Editor</h3>
+                        
+                        <!-- Add Objects Section -->
+                        <div class="editor-section">
+                            <h4>Add Objects</h4>
+                            <div class="instructions">
+                                Enhance your scene with additional elements
+                            </div>
+                            <div class="object-grid">
+                                <div class="object-item" onclick="addObject('table')">
+                                    <div class="object-icon">🪑</div>
+                                    <span>Furniture</span>
+                                </div>
+                                <div class="object-item" onclick="addObject('plant')">
+                                    <div class="object-icon">🌿</div>
+                                    <span>Plants</span>
+                                </div>
+                                <div class="object-item" onclick="addObject('lighting')">
+                                    <div class="object-icon">💡</div>
+                                    <span>Lighting</span>
+                                </div>
+                                <div class="object-item" onclick="addObject('decor')">
+                                    <div class="object-icon">🏺</div>
+                                    <span>Decor</span>
+                                </div>
+                                <div class="object-item" onclick="addObject('texture')">
+                                    <div class="object-icon">🎨</div>
+                                    <span>Textures</span>
+                                </div>
+                                <div class="object-item" onclick="addObject('people')">
+                                    <div class="object-icon">👤</div>
+                                    <span>People</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button class="approve-btn">Apply Changes</button>
+                    </div>
+                </div>
+                <div class="nav-buttons">
+                    <button class="nav-btn secondary" onclick="previousStep()">← Back to Lifestyle</button>
+                    <button class="nav-btn primary" onclick="nextStep()">Continue to Video Generation →</button>
+                </div>
+            </div>
+
+            <!-- Video Generation -->
+            <div class="video-generation" id="videoGeneration">
+                <div class="video-preview">
+                    <div class="play-button">
+                        <div class="play-icon"></div>
+                    </div>
+                </div>
+                <div class="video-controls">
+                    <div class="control-group">
+                        <label>Video Style</label>
+                        <select>
+                            <option>360° Product Spin</option>
+                            <option>Zoom Showcase</option>
+                            <option>Lifestyle Scene</option>
+                            <option>Feature Highlights</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label>Duration</label>
+                        <select>
+                            <option>3 seconds</option>
+                            <option>5 seconds</option>
+                            <option>10 seconds</option>
+                            <option>15 seconds</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label>Quality</label>
+                        <select>
+                            <option>Standard (720p)</option>
+                            <option>High (1080p)</option>
+                            <option>Ultra (4K)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="nav-buttons">
+                    <button class="nav-btn secondary" onclick="previousStep()">← Back to Scene Editor</button>
+                    <button class="nav-btn primary" onclick="nextStep()">Continue to Color Variants →</button>
+                </div>
+            </div>
+
+            <!-- Variant Generation - MASKING WORKFLOW -->
+            <div class="variant-generation" id="variantGeneration" style="display: none;">
+                <div class="masking-workflow-container">
+                    <div class="workflow-header">
+                        <h3>Video Color Variants</h3>
+                        <p>Create multiple color versions by selecting objects in the first frame and tracking them through the entire video</p>
+                    </div>
+
+                    <div class="masking-steps">
+                        <!-- Step 1: Select First Frame -->
+                        <div class="masking-step">
+                            <div class="step-header">
+                                <div class="step-number">1</div>
+                                <div class="step-title">Select First Frame</div>
+                            </div>
+                            <div class="step-description">
+                                Choose the frame where you want to start selecting objects for color changes. This will be the reference frame for object tracking.
+                            </div>
+                            
+                            <div class="frame-selection-area">
+                                <div class="video-preview-area">
+                                    <h4>Video Preview</h4>
+                                    <div class="first-frame-preview" id="firstFramePreview" onclick="selectFirstFrame()">
+                                        <svg class="frame-star" viewBox="0 0 200 200">
+                                            <path d="M100,10 L120,70 L180,70 L130,110 L150,170 L100,130 L50,170 L70,110 L20,70 L80,70 Z" 
+                                                  fill="#ff0080" stroke="#000" stroke-width="2"/>
+                                        </svg>
+                                    </div>
+                                </div>
+                                
+                                <div class="frame-controls">
+                                    <h4>Frame Navigation</h4>
+                                    <div class="frame-navigation">
+                                        <button class="frame-nav-btn" onclick="previousFrame()" id="prevFrameBtn">‹</button>
+                                        <div class="frame-counter" id="frameCounter">Frame 1 / 150</div>
+                                        <button class="frame-nav-btn" onclick="nextFrame()" id="nextFrameBtn">›</button>
+                                    </div>
+                                    
+                                    <div class="frame-info" id="frameInfo">
+                                        <div class="frame-info-title">Frame Selected</div>
+                                        <div class="frame-info-details">This frame will be used as the reference for object tracking throughout the video.</div>
+                                    </div>
+                                    
+                                    <button class="select-frame-btn" onclick="confirmFrame()" id="selectFrameBtn">Select This Frame</button>
+                                </div>
+                            </div>
+                            
+                            <div class="step-nav-buttons">
+                                <button class="step-nav-btn primary" onclick="proceedToMasking()" id="continueToMaskingBtn" disabled>Continue to Masking →</button>
+                            </div>
+                        </div>
+
+                        <!-- Step 2: Create Object Mask -->
+                        <div class="masking-step disabled" id="maskingStep">
+                            <div class="step-header">
+                                <div class="step-number">2</div>
+                                <div class="step-title">Create Object Mask</div>
+                            </div>
+                            <div class="step-description">
+                                Select the object you want to change colors. Click on the object or use the brush tools to create a precise mask. This mask will be tracked through the entire video.
+                            </div>
+                            
+                            <div class="masking-area">
+                                <div class="mask-preview-area">
+                                    <h4>Selected Frame</h4>
+                                    <div class="maskable-frame" id="maskableFrame">
+                                        <svg class="maskable-star" viewBox="0 0 200 200" id="maskableStar">
+                                            <path d="M100,10 L120,70 L180,70 L130,110 L150,170 L100,130 L50,170 L70,110 L20,70 L80,70 Z" 
+                                                  fill="#ff0080" stroke="#000" stroke-width="2" onclick="selectObjectToMask(this)"/>
+                                        </svg>
+                                        <div class="mask-overlay" id="maskOverlay"></div>
+                                    </div>
+                                    <div class="mask-instruction">Click on the object you want to change colors</div>
+                                </div>
+                                
+                                <div class="mask-tools-area">
+                                    <h4>Masking Tools</h4>
+                                    <div class="masking-tools">
+                                        <div class="mask-tool active" onclick="setMaskTool('select')" id="selectTool">
+                                            <div class="tool-icon">👆</div>
+                                            <span>Auto Select Object</span>
+                                        </div>
+                                        <div class="mask-tool" onclick="setMaskTool('brush')" id="brushTool">
+                                            <div class="tool-icon">🖌️</div>
+                                            <span>Paint Mask</span>
+                                        </div>
+                                        <div class="mask-tool" onclick="setMaskTool('eraser')" id="eraserTool">
+                                            <div class="tool-icon">🧹</div>
+                                            <span>Erase Mask</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mask-settings">
+                                        <div class="mask-setting">
+                                            <label>Brush Size:</label>
+                                            <input type="range" id="brushSize" min="5" max="50" value="20">
+                                            <span id="brushSizeValue">20px</span>
+                                        </div>
+                                        <div class="mask-setting">
+                                            <label>Edge Softness:</label>
+                                            <input type="range" id="edgeFeather" min="0" max="10" value="2">
+                                            <span id="featherValue">2px</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mask-actions">
+                                        <button class="mask-action-btn secondary" onclick="clearMask()">Clear Mask</button>
+                                        <button class="mask-action-btn secondary" onclick="autoMask()">Auto-Detect Object</button>
+                                        <button class="mask-action-btn primary" onclick="applyMask()">Apply Mask</button>
+                                    </div>
+                                    
+                                    <div class="mask-status" id="maskStatus">
+                                        <div class="status-icon">✅</div>
+                                        <div class="status-text">Object masked and ready for tracking</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="step-nav-buttons">
+                                <button class="step-nav-btn secondary" onclick="backToFrameSelection()">← Back to Frame Selection</button>
+                                <button class="step-nav-btn primary" onclick="proceedToColorGeneration()" id="continueToColorBtn" disabled>Continue to Color Generation →</button>
+                            </div>
+                        </div>
+
+                        <!-- Step 3: Generate Color Variants -->
+                        <div class="masking-step disabled" id="colorStep">
+                            <div class="step-header">
+                                <div class="step-number">3</div>
+                                <div class="step-title">Generate Color Variants</div>
+                            </div>
+                            <div class="step-description">
+                                Choose the colors you want to generate. The AI will track your masked object through the entire video and create color variants automatically.
+                            </div>
+                            
+                            <div class="color-generation-area">
+                                <div class="tracking-preview-area">
+                                    <h4>Object Tracking Preview</h4>
+                                    <div class="tracking-preview">
+                                        <svg class="frame-star" viewBox="0 0 200 200">
+                                            <path d="M100,10 L120,70 L180,70 L130,110 L150,170 L100,130 L50,170 L70,110 L20,70 L80,70 Z" 
+                                                  fill="#ff0080" stroke="#000" stroke-width="2"/>
+                                        </svg>
+                                    </div>
+                                    <div class="tracking-info">
+                                        <div class="tracking-info-title">Object Tracked</div>
+                                        <div class="tracking-info-text">AI will track this object through 150 frames</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="color-variant-controls">
+                                    <h4>Select Colors to Generate</h4>
+                                    <div class="color-grid">
+                                        <div class="color-option selected" onclick="toggleColorVariant(this, '#ff6b35')" data-color="#ff6b35">
+                                            <div class="color-circle" style="background: #ff6b35;"></div>
+                                            <span>Orange</span>
+                                            <div class="color-checkbox">✓</div>
+                                        </div>
+                                        <div class="color-option selected" onclick="toggleColorVariant(this, '#ff0080')" data-color="#ff0080">
+                                            <div class="color-circle" style="background: #ff0080;"></div>
+                                            <span>Pink</span>
+                                            <div class="color-checkbox">✓</div>
+                                        </div>
+                                        <div class="color-option selected" onclick="toggleColorVariant(this, '#7c4dff')" data-color="#7c4dff">
+                                            <div class="color-circle" style="background: #7c4dff;"></div>
+                                            <span>Purple</span>
+                                            <div class="color-checkbox">✓</div>
+                                        </div>
+                                        <div class="color-option" onclick="toggleColorVariant(this, '#34c759')" data-color="#34c759">
+                                            <div class="color-circle" style="background: #34c759;"></div>
+                                            <span>Green</span>
+                                            <div class="color-checkbox">✓</div>
+                                        </div>
+                                        <div class="color-option" onclick="toggleColorVariant(this, '#007aff')" data-color="#007aff">
+                                            <div class="color-circle" style="background: #007aff;"></div>
+                                            <span>Blue</span>
+                                            <div class="color-checkbox">✓</div>
+                                        </div>
+                                        <div class="color-option" onclick="toggleColorVariant(this, '#ff3b30')" data-color="#ff3b30">
+                                            <div class="color-circle" style="background: #ff3b30;"></div>
+                                            <span>Red</span>
+                                            <div class="color-checkbox">✓</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="generation-settings">
+                                        <div class="setting-group">
+                                            <label>Quality</label>
+                                            <select>
+                                                <option>Match Original</option>
+                                                <option>High (1080p)</option>
+                                                <option>Ultra (4K)</option>
+                                            </select>
+                                        </div>
+                                        <div class="setting-group">
+                                            <label>Processing Speed</label>
+                                            <select>
+                                                <option>Fast (3-5 min)</option>
+                                                <option>Balanced (8-12 min)</option>
+                                                <option>High Quality (15-20 min)</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <button class="generate-btn" onclick="generateColorVariants()" id="generateBtn">
+                                        Generate <span id="selectedColorCount">3</span> Color Variants
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="step-nav-buttons">
+                                <button class="step-nav-btn secondary" onclick="backToMasking()">← Back to Masking</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Generated Results -->
+                <div class="generated-results" id="generatedResults">
+                    <h3>🎉 Color Variants Generated Successfully!</h3>
+                    <div class="results-grid">
+                        <div class="result-item">
+                            <div class="result-video">
+                                <div class="play-button-small">▶</div>
+                            </div>
+                            <div class="result-label">
+                                <div class="color-indicator" style="background: #ff6b35;"></div>
+                                Orange Variant
+                            </div>
+                        </div>
+                        <div class="result-item">
+                            <div class="result-video">
+                                <div class="play-button-small">▶</div>
+                            </div>
+                            <div class="result-label">
+                                <div class="color-indicator" style="background: #ff0080;"></div>
+                                Pink Variant
+                            </div>
+                        </div>
+                        <div class="result-item">
+                            <div class="result-video">
+                                <div class="play-button-small">▶</div>
+                            </div>
+                            <div class="result-label">
+                                <div class="color-indicator" style="background: #7c4dff;"></div>
+                                Purple Variant
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-btn secondary" onclick="previousStep()">← Back</button>
+                    <button class="nav-btn primary" onclick="nextStep()">Continue to Export →</button>
+                </div>
+            </div>
+
+            <!-- Library -->
+            <div class="library" id="library" style="display: none;">
+                <div class="library-header">
+                    <div class="library-title">
+                        <h3>Asset Library</h3>
+                        <p>Manage and organize your generated content</p>
+                    </div>
+                    <div class="library-actions">
+                        <button class="action-btn" onclick="createFolder()">
+                            <span class="icon">📁</span>
+                            New Folder
+                        </button>
+                        <button class="action-btn" onclick="uploadAsset()">
+                            <span class="icon">⬆️</span>
+                            Upload
+                        </button>
+                        <div class="selection-tools" id="selectionTools" style="display: none;">
+                            <span class="selected-count" id="selectedCount">0 selected</span>
+                            <button class="tool-btn" onclick="downloadSelected()">Download</button>
+                            <button class="tool-btn" onclick="deleteSelected()">Delete</button>
+                            <button class="tool-btn" onclick="moveSelected()">Move</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="library-content">
+                    <!-- Folder Navigation -->
+                    <div class="breadcrumb">
+                        <span onclick="navigateToFolder('home')" class="breadcrumb-item active">Library</span>
+                        <span class="breadcrumb-separator">></span>
+                        <span class="breadcrumb-item">Recent Projects</span>
+                    </div>
+
+                    <!-- Asset Grid -->
+                    <div class="asset-grid">
+                        <!-- Folders -->
+                        <div class="asset-item folder" onclick="openFolder('recent-videos')">
+                            <div class="asset-preview">
+                                <div class="folder-icon">📁</div>
+                            </div>
+                            <div class="asset-info">
+                                <div class="asset-name">Recent Videos</div>
+                                <div class="asset-meta">8 items • Modified today</div>
+                            </div>
+                            <div class="asset-checkbox">
+                                <input type="checkbox" onclick="toggleSelection(this, event)">
+                            </div>
+                        </div>
+
+                        <div class="asset-item folder" onclick="openFolder('product-variants')">
+                            <div class="asset-preview">
+                                <div class="folder-icon">📁</div>
+                            </div>
+                            <div class="asset-info">
+                                <div class="asset-name">Product Variants</div>
+                                <div class="asset-meta">12 items • Modified Sep 25, 2025</div>
+                            </div>
+                            <div class="asset-checkbox">
+                                <input type="checkbox" onclick="toggleSelection(this, event)">
+                            </div>
+                        </div>
+
+                        <!-- Video Assets -->
+                        <div class="asset-item video" onclick="previewAsset('video1')">
+                            <div class="asset-preview">
+                                <div class="video-thumbnail">
+                                    <div class="play-overlay">▶</div>
+                                </div>
+                            </div>
+                            <div class="asset-info">
+                                <div class="asset-name">Product_Spin_Orange.mp4</div>
+                                <div class="asset-meta">2.4 MB • Sep 28, 2025 • 5 sec</div>
+                            </div>
+                            <div class="asset-checkbox">
+                                <input type="checkbox" onclick="toggleSelection(this, event)">
+                            </div>
+                        </div>
+
+                        <div class="asset-item video" onclick="previewAsset('video2')">
+                            <div class="asset-preview">
+                                <div class="video-thumbnail">
+                                    <div class="play-overlay">▶</div>
+                                </div>
+                            </div>
+                            <div class="asset-info">
+                                <div class="asset-name">Product_Spin_Pink.mp4</div>
+                                <div class="asset-meta">2.4 MB • Sep 28, 2025 • 5 sec</div>
+                            </div>
+                            <div class="asset-checkbox">
+                                <input type="checkbox" onclick="toggleSelection(this, event)">
+                            </div>
+                        </div>
+
+                        <div class="asset-item video" onclick="previewAsset('video3')">
+                            <div class="asset-preview">
+                                <div class="video-thumbnail">
+                                    <div class="play-overlay">▶</div>
+                                </div>
+                            </div>
+                            <div class="asset-info">
+                                <div class="asset-name">Product_Spin_Purple.mp4</div>
+                                <div class="asset-meta">2.4 MB • Sep 28, 2025 • 5 sec</div>
+                            </div>
+                            <div class="asset-checkbox">
+                                <input type="checkbox" onclick="toggleSelection(this, event)">
+                            </div>
+                        </div>
+
+                        <!-- Image Assets -->
+                        <div class="asset-item image" onclick="previewAsset('image1')">
+                            <div class="asset-preview">
+                                <div class="image-thumbnail">
+                                    <div class="image-placeholder">🖼️</div>
+                                </div>
+                            </div>
+                            <div class="asset-info">
+                                <div class="asset-name">Lifestyle_Scene_01.jpg</div>
+                                <div class="asset-meta">1.2 MB • Sep 27, 2025 • 1920x1080</div>
+                            </div>
+                            <div class="asset-checkbox">
+                                <input type="checkbox" onclick="toggleSelection(this, event)">
+                            </div>
+                        </div>
+
+                        <div class="asset-item image" onclick="previewAsset('image2')">
+                            <div class="asset-preview">
+                                <div class="image-thumbnail">
+                                    <div class="image-placeholder">🖼️</div>
+                                </div>
+                            </div>
+                            <div class="asset-info">
+                                <div class="asset-name">Product_Frame_02.png</div>
+                                <div class="asset-meta">800 KB • Sep 26, 2025 • 1200x800</div>
+                            </div>
+                            <div class="asset-checkbox">
+                                <input type="checkbox" onclick="toggleSelection(this, event)">
+                            </div>
+                        </div>
+
+                        <!-- 3D Model Assets -->
+                        <div class="asset-item model" onclick="previewAsset('model1')">
+                            <div class="asset-preview">
+                                <div class="model-thumbnail">
+                                    <div class="model-placeholder">🎯</div>
+                                </div>
+                            </div>
+                            <div class="asset-info">
+                                <div class="asset-name">Product_Model.obj</div>
+                                <div class="asset-meta">5.1 MB • Sep 25, 2025 • 3D Model</div>
+                            </div>
+                            <div class="asset-checkbox">
+                                <input type="checkbox" onclick="toggleSelection(this, event)">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-btn secondary" onclick="previousStep()">← Back to Export Settings</button>
+                    <button class="nav-btn primary" onclick="finishWorkflow()">Complete Workflow ✓</button>
+                </div>
+            </div>
+
+            <!-- Export Settings -->
+            <div class="export-settings" id="exportSettings" style="display: none;">
+                <div class="export-content">
+                    <div class="export-preview">
+                        <h3>Export Preview</h3>
+                        <div class="preview-container" id="previewContainer">
+                            <div class="aspect-frame" id="aspectFrame">
+                                <div class="preview-video">
+                                    <div class="play-button-preview">▶</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="preview-info">
+                            <span id="dimensionsText">1920 × 1080 (16:9)</span>
+                            <span id="platformText">Instagram Feed</span>
+                        </div>
+                    </div>
+
+                    <div class="export-controls">
+                        <h3>Export Settings</h3>
+                        
+                        <!-- Platform Selection -->
+                        <div class="export-section">
+                            <h4>Marketplace Platforms</h4>
+                            <p style="font-size: 14px; color: #666; margin-bottom: 16px;">Select one or multiple platforms to export for</p>
+                            <div class="platform-grid">
+                                <div class="platform-card active" onclick="togglePlatform(this, 'amazon')" data-ratio="1:1" data-size="1920x1920">
+                                    <div class="platform-checkbox">✓</div>
+                                    <div class="platform-icon">📦</div>
+                                    <div class="platform-name">Amazon</div>
+                                    <div class="platform-ratio">1:1 Square</div>
+                                </div>
+                                <div class="platform-card" onclick="togglePlatform(this, 'amazon-wide')" data-ratio="16:9" data-size="1920x1080">
+                                    <div class="platform-checkbox">✓</div>
+                                    <div class="platform-icon">📦</div>
+                                    <div class="platform-name">Amazon Wide</div>
+                                    <div class="platform-ratio">16:9 Landscape</div>
+                                </div>
+                                <div class="platform-card" onclick="togglePlatform(this, 'ebay')" data-ratio="1:1" data-size="1600x1600">
+                                    <div class="platform-checkbox">✓</div>
+                                    <div class="platform-icon">🛍️</div>
+                                    <div class="platform-name">eBay</div>
+                                    <div class="platform-ratio">1:1 Square</div>
+                                </div>
+                                <div class="platform-card" onclick="togglePlatform(this, 'etsy')" data-ratio="4:3" data-size="2000x1500">
+                                    <div class="platform-checkbox">✓</div>
+                                    <div class="platform-icon">🎨</div>
+                                    <div class="platform-name">Etsy</div>
+                                    <div class="platform-ratio">4:3 Product</div>
+                                </div>
+                                <div class="platform-card" onclick="togglePlatform(this, 'shopify')" data-ratio="1:1" data-size="2048x2048">
+                                    <div class="platform-checkbox">✓</div>
+                                    <div class="platform-icon">🛒</div>
+                                    <div class="platform-name">Shopify</div>
+                                    <div class="platform-ratio">1:1 Square</div>
+                                </div>
+                                <div class="platform-card" onclick="togglePlatform(this, 'walmart')" data-ratio="1:1" data-size="2000x2000">
+                                    <div class="platform-checkbox">✓</div>
+                                    <div class="platform-icon">🏬</div>
+                                    <div class="platform-name">Walmart</div>
+                                    <div class="platform-ratio">1:1 Square</div>
+                                </div>
+                                <div class="platform-card" onclick="togglePlatform(this, 'target')" data-ratio="1:1" data-size="2000x2000">
+                                    <div class="platform-checkbox">✓</div>
+                                    <div class="platform-icon">🎯</div>
+                                    <div class="platform-name">Target Plus</div>
+                                    <div class="platform-ratio">1:1 Square</div>
+                                </div>
+                                <div class="platform-card" onclick="togglePlatform(this, 'wayfair')" data-ratio="3:2" data-size="2000x1333">
+                                    <div class="platform-checkbox">✓</div>
+                                    <div class="platform-icon">🏠</div>
+                                    <div class="platform-name">Wayfair</div>
+                                    <div class="platform-ratio">3:2 Lifestyle</div>
+                                </div>
+                                <div class="platform-card" onclick="togglePlatform(this, 'custom')" data-ratio="custom" data-size="custom">
+                                    <div class="platform-checkbox">✓</div>
+                                    <div class="platform-icon">⚙️</div>
+                                    <div class="platform-name">Custom</div>
+                                    <div class="platform-ratio">Custom Size</div>
+                                </div>
+                            </div>
+                            <div class="platform-selection-summary">
+                                <span id="platformSelectionCount">1 platform selected</span>
+                            </div>
+                        </div>
+
+                        <!-- Custom Dimensions -->
+                        <div class="export-section" id="customDimensions" style="display: none;">
+                            <h4>Custom Dimensions</h4>
+                            <div class="dimension-inputs">
+                                <div class="input-group">
+                                    <label>Width</label>
+                                    <input type="number" id="customWidth" value="1920" min="100" max="4000">
+                                    <span>px</span>
+                                </div>
+                                <div class="input-group">
+                                    <label>Height</label>
+                                    <input type="number" id="customHeight" value="1080" min="100" max="4000">
+                                    <span>px</span>
+                                </div>
+                                <div class="aspect-lock">
+                                    <input type="checkbox" id="aspectLock" checked>
+                                    <label for="aspectLock">Lock aspect ratio</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quality & Format -->
+                        <div class="export-section">
+                            <h4>Quality & Format</h4>
+                            <div class="quality-grid">
+                                <div class="setting-group">
+                                    <label>Video Quality</label>
+                                    <select id="videoQuality">
+                                        <option value="720p">HD 720p</option>
+                                        <option value="1080p" selected>Full HD 1080p</option>
+                                        <option value="1440p">2K 1440p</option>
+                                        <option value="4k">4K Ultra HD</option>
+                                    </select>
+                                </div>
+                                <div class="setting-group">
+                                    <label>File Format</label>
+                                    <select id="fileFormat">
+                                        <option value="mp4" selected>MP4 (Recommended)</option>
+                                        <option value="mov">MOV</option>
+                                        <option value="webm">WebM</option>
+                                        <option value="gif">GIF</option>
+                                    </select>
+                                </div>
+                                <div class="setting-group">
+                                    <label>Frame Rate</label>
+                                    <select id="frameRate">
+                                        <option value="24">24 fps</option>
+                                        <option value="30" selected>30 fps</option>
+                                        <option value="60">60 fps</option>
+                                    </select>
+                                </div>
+                                <div class="setting-group">
+                                    <label>Compression</label>
+                                    <select id="compression">
+                                        <option value="high">High Quality</option>
+                                        <option value="balanced" selected>Balanced</option>
+                                        <option value="small">Small File Size</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Bulk Export -->
+                        <div class="export-section">
+                            <h4>Bulk Export Options</h4>
+                            <div class="bulk-options">
+                                <div class="bulk-option">
+                                    <input type="checkbox" id="exportAllVariants" checked>
+                                    <label for="exportAllVariants">Export all color variants</label>
+                                </div>
+                                <div class="bulk-option">
+                                    <input type="checkbox" id="exportMultiplePlatforms">
+                                    <label for="exportMultiplePlatforms">Export for multiple platforms</label>
+                                </div>
+                                <div class="bulk-option">
+                                    <input type="checkbox" id="includeOriginal">
+                                    <label for="includeOriginal">Include original dimensions</label>
+                                </div>
+                            </div>
+                            <div class="platform-multi-select" id="platformMultiSelect" style="display: none;">
+                                <label>Select platforms for bulk export:</label>
+                                <div class="platform-checkboxes">
+                                    <div class="platform-check">
+                                        <input type="checkbox" id="bulk-instagram" checked>
+                                        <label for="bulk-instagram">Instagram (1:1 + 9:16)</label>
+                                    </div>
+                                    <div class="platform-check">
+                                        <input type="checkbox" id="bulk-youtube">
+                                        <label for="bulk-youtube">YouTube (16:9)</label>
+                                    </div>
+                                    <div class="platform-check">
+                                        <input type="checkbox" id="bulk-tiktok">
+                                        <label for="bulk-tiktok">TikTok (9:16)</label>
+                                    </div>
+                                    <div class="platform-check">
+                                        <input type="checkbox" id="bulk-facebook">
+                                        <label for="bulk-facebook">Facebook (16:9)</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Export Summary -->
+                        <div class="export-summary">
+                            <div class="summary-item">
+                                <span class="summary-label">Files to export:</span>
+                                <span class="summary-value" id="fileCount">3 videos</span>
+                            </div>
+                            <div class="summary-item">
+                                <span class="summary-label">Estimated size:</span>
+                                <span class="summary-value" id="estimatedSize">~15.2 MB</span>
+                            </div>
+                            <div class="summary-item">
+                                <span class="summary-label">Processing time:</span>
+                                <span class="summary-value" id="processingTime">~2-3 minutes</span>
+                            </div>
+                        </div>
+
+                        <button class="export-btn" onclick="startExport()">
+                            <span class="export-icon">📤</span>
+                            Start Export
+                        </button>
+                    </div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-btn secondary" onclick="previousStep()">← Back</button>
+                    <button class="nav-btn primary" onclick="nextStep()">Continue to Library →</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Timeline -->
+        <div class="timeline-step active" onclick="goToStep(0)" id="step0">
+            <div class="timeline-number">0</div>
+            <div class="timeline-text">Mode</div>
+        </div>
+        <div class="timeline-step" onclick="goToStep(1)" id="step1">
+            <div class="timeline-number">1</div>
+            <div class="timeline-text">Frame</div>
+        </div>
+                <div class="timeline-step" onclick="goToStep(2)" id="step2">
+                    <div class="timeline-number">2</div>
+                    <div class="timeline-text">Lifestyle Gen</div>
+                </div>
+                <div class="timeline-step" onclick="goToStep(3)" id="step3">
+                    <div class="timeline-number">3</div>
+                    <div class="timeline-text">Scene Editor</div>
+                </div>
+                <div class="timeline-step" onclick="goToStep(4)" id="step4">
+                    <div class="timeline-number">4</div>
+                    <div class="timeline-text">Video Gen</div>
+                </div>
+                <div class="timeline-step" onclick="goToStep(5)" id="step5">
+                    <div class="timeline-number">5</div>
+                    <div class="timeline-text">Color Variants</div>
+                </div>
+                <div class="timeline-step" onclick="goToStep(6)" id="step6">
+                    <div class="timeline-number">6</div>
+                    <div class="timeline-text">Export Settings</div>
+                </div>
+                <div class="timeline-step" onclick="goToStep(7)" id="step7">
+                    <div class="timeline-number">7</div>
+                    <div class="timeline-text">Library</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentStep = 0;
+        let selectedFrame = null;
+        let selectedScene = null;
+        const totalSteps = 7;
+
+        // Masking workflow state
+        let currentFrame = 1;
+        let totalFrames = 150;
+        let frameSelected = false;
+        let maskApplied = false;
+        let currentMaskTool = 'select';
+
+        const screens = {
+            0: 'modeSelection',
+            1: 'frameSelection',
+            2: 'lifestyleGeneration',
+            3: 'variantViewer',
+            4: 'videoGeneration',
+            5: 'variantGeneration',
+            6: 'exportSettings',
+            7: 'library'
+        };
+
+        const subtitles = {
+            0: 'Choose Your Workflow',
+            1: 'Frame Selection',
+            2: 'Lifestyle Generation',
+            3: 'Scene Editor',
+            4: 'Video Generation',
+            5: 'Video Color Variants',
+            6: 'Export Settings',
+            7: 'Asset Library'
+        };
+        // Mode Selection
+                function selectMode(mode) {
+                    if (mode === 'manual') {
+                        currentStep = 1;
+                        updateTimeline();
+                        showScreen(screens[currentStep]);
+                    } else {
+                        alert('Quick Generate coming soon! Try Full Control workflow.');
+                    }
+                }
+        // MASKING WORKFLOW FUNCTIONS
+
+        // Step 1: Frame Selection
+        function selectFirstFrame() {
+            const preview = document.getElementById('firstFramePreview');
+            preview.classList.add('selected');
+            
+            const frameInfo = document.getElementById('frameInfo');
+            frameInfo.classList.add('active');
+            
+            console.log(`Selected frame ${currentFrame} as reference frame`);
+        }
+
+        function previousFrame() {
+            if (currentFrame > 1) {
+                currentFrame--;
+                updateFrameCounter();
+            }
+        }
+
+        function nextFrame() {
+            if (currentFrame < totalFrames) {
+                currentFrame++;
+                updateFrameCounter();
+            }
+        }
+
+        function updateFrameCounter() {
+            const counter = document.getElementById('frameCounter');
+            counter.textContent = `Frame ${currentFrame} / ${totalFrames}`;
+            
+            const prevBtn = document.getElementById('prevFrameBtn');
+            const nextBtn = document.getElementById('nextFrameBtn');
+            
+            if (prevBtn) prevBtn.disabled = currentFrame === 1;
+            if (nextBtn) nextBtn.disabled = currentFrame === totalFrames;
+        }
+
+        function confirmFrame() {
+            frameSelected = true;
+            
+            const maskingStep = document.getElementById('maskingStep');
+            if (maskingStep) {
+                maskingStep.classList.remove('disabled');
+            }
+            
+            // Enable continue button
+            const continueBtn = document.getElementById('continueToMaskingBtn');
+            if (continueBtn) {
+                continueBtn.disabled = false;
+            }
+            
+            showLoading('Preparing frame for masking...', 2000);
+            
+            console.log(`Frame ${currentFrame} confirmed for masking`);
+        }
+
+        function proceedToMasking() {
+            const maskingStep = document.getElementById('maskingStep');
+            if (maskingStep) {
+                maskingStep.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+
+        function backToFrameSelection() {
+            const frameSection = document.querySelector('.masking-step:first-child');
+            if (frameSection) {
+                frameSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+
+        // Step 2: Object Masking
+        function selectObjectToMask(element) {
+            if (currentMaskTool === 'select' && frameSelected) {
+                const maskOverlay = document.getElementById('maskOverlay');
+                if (maskOverlay) {
+                    maskOverlay.classList.add('active');
+                }
+                
+                showLoading('AI analyzing object for masking...', 3000);
+                
+                setTimeout(() => {
+                    applyMask();
+                }, 3000);
+            }
+        }
+
+        function setMaskTool(tool) {
+            if (!frameSelected) return;
+            
+            currentMaskTool = tool;
+            
+            document.querySelectorAll('.mask-tool').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            const toolButton = document.getElementById(tool + 'Tool');
+            if (toolButton) {
+                toolButton.classList.add('active');
+            }
+            
+            const maskableFrame = document.getElementById('maskableFrame');
+            if (maskableFrame) {
+                if (tool === 'select') {
+                    maskableFrame.style.cursor = 'pointer';
+                } else if (tool === 'brush') {
+                    maskableFrame.style.cursor = 'crosshair';
+                } else if (tool === 'eraser') {
+                    maskableFrame.style.cursor = 'not-allowed';
+                }
+            }
+        }
+
+        function clearMask() {
+            if (!frameSelected) return;
+            
+            const maskOverlay = document.getElementById('maskOverlay');
+            const maskStatus = document.getElementById('maskStatus');
+            
+            if (maskOverlay) maskOverlay.classList.remove('active');
+            if (maskStatus) maskStatus.classList.remove('active');
+            
+            maskApplied = false;
+            
+            const colorStep = document.getElementById('colorStep');
+            if (colorStep) {
+                colorStep.classList.add('disabled');
+            }
+            
+            console.log('Mask cleared');
+        }
+
+        function autoMask() {
+            if (!frameSelected) return;
+            
+            showLoading('AI auto-detecting main object...', 4000);
+            
+            setTimeout(() => {
+                const maskOverlay = document.getElementById('maskOverlay');
+                if (maskOverlay) {
+                    maskOverlay.classList.add('active');
+                }
+                applyMask();
+            }, 4000);
+        }
+
+        function applyMask() {
+            if (!frameSelected) return;
+            
+            const maskStatus = document.getElementById('maskStatus');
+            if (maskStatus) {
+                maskStatus.classList.add('active');
+            }
+            
+            maskApplied = true;
+            
+            const colorStep = document.getElementById('colorStep');
+            if (colorStep) {
+                colorStep.classList.remove('disabled');
+            }
+            
+            // Enable continue button
+            const continueBtn = document.getElementById('continueToColorBtn');
+            if (continueBtn) {
+                continueBtn.disabled = false;
+            }
+            
+            console.log('Mask applied - object ready for tracking and color changes');
+        }
+
+        function proceedToColorGeneration() {
+            const colorStep = document.getElementById('colorStep');
+            if (colorStep) {
+                colorStep.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+
+        function backToMasking() {
+            const maskingStep = document.getElementById('maskingStep');
+            if (maskingStep) {
+                maskingStep.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+
+        // Step 3: Color Generation
+        function toggleColorVariant(element, color) {
+            if (!maskApplied) return;
+            
+            element.classList.toggle('selected');
+            updateSelectedColorCount();
+        }
+
+        function updateSelectedColorCount() {
+            const selectedColors = document.querySelectorAll('.color-option.selected').length;
+            const countElement = document.getElementById('selectedColorCount');
+            const generateBtn = document.getElementById('generateBtn');
+            
+            if (countElement) {
+                countElement.textContent = selectedColors;
+            }
+            
+            if (generateBtn) {
+                if (selectedColors === 0) {
+                    generateBtn.disabled = true;
+                    generateBtn.textContent = 'Select Colors to Generate';
+                } else {
+                    generateBtn.disabled = false;
+                    generateBtn.innerHTML = `Generate <span id="selectedColorCount">${selectedColors}</span> Color Variants`;
+                }
+            }
+        }
+
+        function generateColorVariants() {
+            if (!maskApplied) return;
+            
+            const selectedColors = document.querySelectorAll('.color-option.selected').length;
+            if (selectedColors === 0) return;
+            
+            showLoading(`Tracking object and generating ${selectedColors} color variants...`, 8000);
+            
+            setTimeout(() => {
+                const results = document.getElementById('generatedResults');
+                if (results) {
+                    results.classList.add('active');
+                    results.scrollIntoView({ behavior: 'smooth' });
+                }
+            }, 8000);
+        }
+
+        function updateTimeline() {
+            // Update all timeline steps
+            for (let i = 0; i <= totalSteps; i++) {                const step = document.getElementById(`step${i}`);
+                step.classList.remove('active', 'completed');
+                
+                if (i < currentStep) {
+                    step.classList.add('completed');
+                } else if (i === currentStep) {
+                    step.classList.add('active');
+                }
+            }
+            
+            // Update subtitle
+            document.getElementById('subtitle').textContent = subtitles[currentStep];
+        }
+
+        function showScreen(screenId) {
+                    // Hide all screens
+                    Object.values(screens).forEach(id => {
+                        const screen = document.getElementById(id);
+                        if (screen) {
+                            if (id === 'modeSelection') {
+                                screen.classList.add('hidden');
+                            } else {
+                                screen.style.display = 'none';
+                            }
+                        }
+                    });
+                    
+                    // Show current screen
+                    const currentScreen = document.getElementById(screenId);
+                    if (currentScreen) {
+                        if (screenId === 'modeSelection') {
+                            currentScreen.classList.remove('hidden');
+                        } else {
+                            currentScreen.style.display = 'block';
+                        }
+                        // Trigger animation
+                        currentScreen.style.animation = 'slideIn 0.3s ease-out';
+                    }
+                }
+        function selectFrame(element, frameNumber) {
+            // Remove previous selection
+            document.querySelectorAll('.frame-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            
+            // Add selection
+            element.classList.add('selected');
+            selectedFrame = frameNumber;
+            
+            // Add loading animation
+            element.querySelector('.frame-preview').classList.add('loading');
+            
+            // Simulate loading
+            setTimeout(() => {
+                element.querySelector('.frame-preview').classList.remove('loading');
+            }, 1000);
+        }
+
+        function selectScene(element, sceneNumber) {
+            // Remove previous selection
+            document.querySelectorAll('.scene-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            
+            // Add selection
+            element.classList.add('selected');
+            selectedScene = sceneNumber;
+        }
+
+        function showLoading(text = 'Processing...', duration = 2000) {
+            const overlay = document.getElementById('loadingOverlay');
+            const loadingText = document.getElementById('loadingText');
+            const progressBar = document.getElementById('progressBar');
+            
+            loadingText.textContent = text;
+            overlay.classList.add('active');
+            
+            // Animate progress bar
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += 5;
+                progressBar.style.width = progress + '%';
+                
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        overlay.classList.remove('active');
+                        progressBar.style.width = '0%';
+                    }, 300);
+                }
+            }, duration / 20);
+        }
+
+        function nextStep() {
+            if (currentStep < totalSteps) {
+                // Validate current step
+                if (currentStep === 1 && !selectedFrame) {
+                    alert('Please select a frame first');
+                    return;
+                }
+                if (currentStep === 2 && !selectedScene) {
+                    alert('Please select a scene first');
+                    return;
+                }
+                
+                // Show loading before transitioning
+                if (currentStep === 2) {
+                    showLoading('Generating lifestyle scene...', 3000);
+                    setTimeout(() => {
+                        currentStep++;
+                        updateTimeline();
+                        if (screens[currentStep]) {
+                            showScreen(screens[currentStep]);
+                        }
+                    }, 3000);
+                } else {
+                    currentStep++;
+                    updateTimeline();
+                    if (screens[currentStep]) {
+                        showScreen(screens[currentStep]);
+                    }
+                }
+            }
+        }
+
+        function previousStep() {
+            if (currentStep > 1) {
+                currentStep--;
+                updateTimeline();
+                if (screens[currentStep]) {
+                    showScreen(screens[currentStep]);
+                }
+            }
+        }
+
+        function goToStep(step) {
+            // Allow navigation to any step (removed restriction)
+            currentStep = step;
+            updateTimeline();
+            if (screens[currentStep]) {
+                showScreen(screens[currentStep]);
+            }
+        }
+
+        function generateVideo() {
+            showLoading('Generating AI video...', 5000);
+            setTimeout(() => {
+                alert('Video generated successfully!');
+                // Continue to next step
+                nextStep();
+            }, 5000);
+        }
+
+        function exportContent() {
+            showLoading('Preparing export...', 3000);
+            setTimeout(() => {
+                alert('Content exported successfully!');
+            }, 3000);
+        }
+
+        function selectVariant(color) {
+            // Remove previous selection
+            document.querySelectorAll('.variant-preview').forEach(item => {
+                item.classList.remove('selected');
+            });
+            
+            // Add selection to clicked variant
+            event.target.closest('.variant-preview').classList.add('selected');
+            
+            // Update the main star color
+            const starPath = document.getElementById('starPath');
+            starPath.setAttribute('fill', color);
+            
+            // Add a smooth transition effect
+            starPath.style.transition = 'fill 0.3s ease';
+        }
+
+        function addObject(objectType) {
+            // Remove previous selection
+            document.querySelectorAll('.object-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            
+            // Add selection to clicked object
+            event.target.closest('.object-item').classList.add('selected');
+            
+            // Show feedback
+            showLoading(`Adding ${objectType} to scene...`, 1500);
+            
+            console.log(`Added ${objectType} to the scene`);
+        }
+
+        function applyPrompt() {
+            const promptText = document.getElementById('scenePrompt').value.trim();
+            if (!promptText) {
+                alert('Please enter a description of the changes you want to make.');
+                return;
+            }
+            
+            showLoading('Applying AI changes to scene...', 3000);
+            
+            setTimeout(() => {
+                // Clear the prompt after applying
+                document.getElementById('scenePrompt').value = '';
+                console.log('Applied prompt:', promptText);
+            }, 3000);
+        }
+
+        function toggleColor(element, color) {
+            element.classList.toggle('selected');
+            updateSelectedCount();
+        }
+
+        function updateSelectedCount() {
+            const selectedColors = document.querySelectorAll('.color-option.selected').length;
+            document.getElementById('selectedCount').textContent = selectedColors;
+            
+            const generateBtn = document.querySelector('.generate-variants-btn');
+            if (selectedColors === 0) {
+                generateBtn.disabled = true;
+                generateBtn.textContent = 'Select Colors to Generate';
+            } else {
+                generateBtn.disabled = false;
+                generateBtn.innerHTML = `Generate <span id="selectedCount">${selectedColors}</span> Color Variants`;
+            }
+        }
+
+        function generateVariants() {
+            const selectedColors = document.querySelectorAll('.color-option.selected').length;
+            if (selectedColors === 0) return;
+            
+            showLoading(`Generating ${selectedColors} color variants...`, 4000);
+            
+            setTimeout(() => {
+                document.getElementById('generatedVariants').style.display = 'block';
+                document.getElementById('generatedVariants').scrollIntoView({ behavior: 'smooth' });
+            }, 4000);
+        }
+
+        // Initialize with 3 colors selected by default
+        document.addEventListener('DOMContentLoaded', function() {
+            // Auto-select first 3 colors when page loads
+            setTimeout(() => {
+                const colorOptions = document.querySelectorAll('.color-option');
+                if (colorOptions.length >= 3) {
+                    colorOptions[0].classList.add('selected'); // Orange
+                    colorOptions[1].classList.add('selected'); // Pink  
+                    colorOptions[2].classList.add('selected'); // Purple
+                    updateSelectedCount();
+                }
+            }, 100);
+        });
+
+        // Library Functions
+        function createFolder() {
+            const folderName = prompt('Enter folder name:');
+            if (folderName) {
+                showLoading(`Creating folder "${folderName}"...`, 1500);
+                console.log('Created folder:', folderName);
+            }
+        }
+
+        function uploadAsset() {
+            showLoading('Opening file browser...', 1000);
+            console.log('Upload asset dialog opened');
+        }
+
+        function toggleSelection(checkbox, event) {
+            event.stopPropagation();
+            const assetItem = checkbox.closest('.asset-item');
+            
+            if (checkbox.checked) {
+                assetItem.classList.add('selected');
+            } else {
+                assetItem.classList.remove('selected');
+            }
+            
+            updateSelectionTools();
+        }
+
+        function updateSelectionTools() {
+            const selectedItems = document.querySelectorAll('.asset-item.selected');
+            const selectionTools = document.getElementById('selectionTools');
+            const selectedCountEl = document.getElementById('selectedCount');
+            
+            if (selectedItems.length > 0) {
+                selectionTools.style.display = 'flex';
+                selectedCountEl.textContent = `${selectedItems.length} selected`;
+            } else {
+                selectionTools.style.display = 'none';
+            }
+        }
+
+        function downloadSelected() {
+            const selectedCount = document.querySelectorAll('.asset-item.selected').length;
+            showLoading(`Downloading ${selectedCount} assets...`, 2000);
+        }
+
+        function deleteSelected() {
+            const selectedCount = document.querySelectorAll('.asset-item.selected').length;
+            if (confirm(`Delete ${selectedCount} selected assets?`)) {
+                showLoading('Deleting assets...', 1500);
+                // Clear selections after delete
+                setTimeout(() => {
+                    document.querySelectorAll('.asset-item.selected').forEach(item => {
+                        item.classList.remove('selected');
+                        item.querySelector('input[type="checkbox"]').checked = false;
+                    });
+                    updateSelectionTools();
+                }, 1500);
+            }
+        }
+
+        function moveSelected() {
+            const selectedCount = document.querySelectorAll('.asset-item.selected').length;
+            const targetFolder = prompt('Move to folder:');
+            if (targetFolder) {
+                showLoading(`Moving ${selectedCount} assets to "${targetFolder}"...`, 2000);
+            }
+        }
+
+        function openFolder(folderName) {
+            showLoading(`Opening ${folderName}...`, 1000);
+            console.log('Opened folder:', folderName);
+        }
+
+        function previewAsset(assetId) {
+            showLoading('Loading preview...', 1000);
+            console.log('Previewing asset:', assetId);
+        }
+
+        function navigateToFolder(path) {
+            showLoading('Navigating...', 500);
+            console.log('Navigate to:', path);
+        }
+
+        // Export Functions
+        function togglePlatform(element, platform) {
+            // Toggle selection
+            element.classList.toggle('active');
+            
+            updatePlatformSelection();
+            updateExportSummary();
+        }
+
+        function updatePlatformSelection() {
+            const selectedPlatforms = document.querySelectorAll('.platform-card.active').length;
+            const summaryElement = document.getElementById('platformSelectionCount');
+            
+            if (summaryElement) {
+                if (selectedPlatforms === 0) {
+                    summaryElement.textContent = 'No platforms selected';
+                    summaryElement.style.color = '#ff3b30';
+                } else if (selectedPlatforms === 1) {
+                    summaryElement.textContent = '1 platform selected';
+                    summaryElement.style.color = '#667eea';
+                } else {
+                    summaryElement.textContent = `${selectedPlatforms} platforms selected`;
+                    summaryElement.style.color = '#667eea';
+                }
+            }
+        }
+
+        function selectPlatform(element, platform) {
+            // Deprecated - keeping for backward compatibility
+            togglePlatform(element, platform);
+        }
+
+        function updateExportSummary() {
+            const exportAllVariants = document.getElementById('exportAllVariants')?.checked || false;
+            const selectedPlatforms = document.querySelectorAll('.platform-card.active').length;
+            
+            let fileCount = exportAllVariants ? 3 : 1; // 3 color variants or 1 video
+            fileCount *= Math.max(selectedPlatforms, 1); // Multiply by number of platforms
+            
+            const fileCountElement = document.getElementById('fileCount');
+            const estimatedSizeElement = document.getElementById('estimatedSize');
+            const processingTimeElement = document.getElementById('processingTime');
+            
+            if (fileCountElement) {
+                fileCountElement.textContent = `${fileCount} video${fileCount > 1 ? 's' : ''}`;
+            }
+            
+            if (estimatedSizeElement) {
+                estimatedSizeElement.textContent = `~${(fileCount * 5.1).toFixed(1)} MB`;
+            }
+            
+            if (processingTimeElement) {
+                const processingTime = Math.ceil(fileCount * 0.5);
+                processingTimeElement.textContent = `~${processingTime}-${processingTime + 1} minutes`;
+            }
+        }
+
+        function startExport() {
+            const exportAllVariants = document.getElementById('exportAllVariants').checked;
+            const exportMultiplePlatforms = document.getElementById('exportMultiplePlatforms').checked;
+            
+            let message = 'Preparing export';
+            if (exportAllVariants) message += ' for all variants';
+            if (exportMultiplePlatforms) message += ' across multiple platforms';
+            
+            showLoading(message + '...', 4000);
+            
+            setTimeout(() => {
+                alert('Export completed successfully! Files have been downloaded.');
+            }, 4000);
+        }
+
+        function finishWorkflow() {
+            showLoading('Saving project...', 2000);
+            setTimeout(() => {
+                alert('Workflow completed! Your project has been saved to the library.');
+            }, 2000);
+        }
+
+        // Event listeners for bulk export options
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(() => {
+                // Set up event listeners for bulk export
+                const exportMultiplePlatforms = document.getElementById('exportMultiplePlatforms');
+                const platformMultiSelect = document.getElementById('platformMultiSelect');
+                
+                if (exportMultiplePlatforms) {
+                    exportMultiplePlatforms.addEventListener('change', function() {
+                        if (this.checked) {
+                            platformMultiSelect.style.display = 'block';
+                        } else {
+                            platformMultiSelect.style.display = 'none';
+                        }
+                        updateExportSummary();
+                    });
+                }
+                
+                // Update summary when any checkbox changes
+                const checkboxes = document.querySelectorAll('#exportAllVariants, .platform-checkboxes input');
+                checkboxes.forEach(checkbox => {
+                    checkbox.addEventListener('change', updateExportSummary);
+                });
+                
+                // Initialize summary
+                updateExportSummary();
+            }, 200);
+        });
+
+        // Initialize
+        updateTimeline();
+    </script>
+</body>
+</html>
