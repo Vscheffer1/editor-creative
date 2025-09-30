@@ -3074,44 +3074,45 @@
                 </div>
             </div>
         </div>
-
-        <!-- Timeline -->
-        <div class="timeline-step active" onclick="goToStep(0)" id="step0">
-            <div class="timeline-number">0</div>
-            <div class="timeline-text">Mode</div>
-        </div>
-        <div class="timeline-step" onclick="goToStep(1)" id="step1">
-            <div class="timeline-number">1</div>
-            <div class="timeline-text">Frame</div>
-        </div>
-                <div class="timeline-step" onclick="goToStep(2)" id="step2">
-                    <div class="timeline-number">2</div>
-                    <div class="timeline-text">Lifestyle Gen</div>
-                </div>
-                <div class="timeline-step" onclick="goToStep(3)" id="step3">
-                    <div class="timeline-number">3</div>
-                    <div class="timeline-text">Scene Editor</div>
-                </div>
-                <div class="timeline-step" onclick="goToStep(4)" id="step4">
-                    <div class="timeline-number">4</div>
-                    <div class="timeline-text">Video Gen</div>
-                </div>
-                <div class="timeline-step" onclick="goToStep(5)" id="step5">
-                    <div class="timeline-number">5</div>
-                    <div class="timeline-text">Color Variants</div>
-                </div>
-                <div class="timeline-step" onclick="goToStep(6)" id="step6">
-                    <div class="timeline-number">6</div>
-                    <div class="timeline-text">Export Settings</div>
-                </div>
-                <div class="timeline-step" onclick="goToStep(7)" id="step7">
-                    <div class="timeline-number">7</div>
-                    <div class="timeline-text">Library</div>
-                </div>
-            </div>
-        </div>
-    </div>
-
+                <!-- Timeline -->
+                <div class="timeline-container">
+                    <div class="timeline-label">Workflow Progress</div>
+                    <div class="timeline-steps">
+                        <div class="timeline-step active" onclick="goToStep(0)" id="step0">
+                            <div class="timeline-number">0</div>
+                            <div class="timeline-text">Mode</div>
+                        </div>
+                        <div class="timeline-step" onclick="goToStep(1)" id="step1">
+                            <div class="timeline-number">1</div>
+                            <div class="timeline-text">Frame</div>
+                        </div>
+                        <div class="timeline-step" onclick="goToStep(2)" id="step2">
+                            <div class="timeline-number">2</div>
+                            <div class="timeline-text">Lifestyle Gen</div>
+                        </div>
+                        <div class="timeline-step" onclick="goToStep(3)" id="step3">
+                            <div class="timeline-number">3</div>
+                            <div class="timeline-text">Scene Editor</div>
+                        </div>
+                        <div class="timeline-step" onclick="goToStep(4)" id="step4">
+                            <div class="timeline-number">4</div>
+                            <div class="timeline-text">Video Gen</div>
+                        </div>
+                        <div class="timeline-step" onclick="goToStep(5)" id="step5">
+                            <div class="timeline-number">5</div>
+                            <div class="timeline-text">Color Variants</div>
+                        </div>
+                        <div class="timeline-step" onclick="goToStep(6)" id="step6">
+                            <div class="timeline-number">6</div>
+                            <div class="timeline-text">Export Settings</div>
+                        </div>
+                        <div class="timeline-step" onclick="goToStep(7)" id="step7">
+                            <div class="timeline-number">7</div>
+                            <div class="timeline-text">Library</div>
+                        </div>
+                    </div> <!-- Close timeline-steps -->
+                </div> <!-- Close timeline-container -->
+            </div> <!-- Close editor-container -->
     <script>
         let currentStep = 0;
         let selectedFrame = null;
